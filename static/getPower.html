@@ -10,18 +10,20 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 
-    <title>Wind turbine power prediction utility</title>		
-
     <style>
-      div {margin: 25px;}
+      div {margin: 35px;}
 	  input[type=number]{width: 10ch}
 	  input[type=text]{width: 70ch}
+	  #demo {width: 35ch;background-color: LightGreen;}
+	  #output1 {background-color: Plum;}
     </style>
+    <title>Wind turbine power prediction utility</title>		
+	
     <script>myFunction();</script>
 	
   </head>
   <body onload="myFunction() ">
-    <h1 style="text-align:center">Predict turbine power output from input wind speed</h1>
+    <h1 style="text-align:center;color: Plum">Predict turbine power output from input wind speed</h1>
 	<p>This utility predicts wind turbine power from an input wind speed value. 
 	   As turbines do not function below a certain minimum wind speed, or above a particular maximum wind speed
 	   (due to frictional forces in the mechanism, and to protect the turbine from damage caused by forces that are too large)
@@ -41,8 +43,8 @@
   
        <form action="/api/speed" method="POST">
         <div class="form-group">
-            <label for="name">Input wind speed (km/h)</label>
-            <input type="number" class="form-control" name="name" placeholder="0" size="6" step="0.001">
+            <label for="name" style="font-size:30px;color: red">Input wind speed (km/h)</label>
+            <input style="color: red" type="number" class="form-control" name="name" placeholder="0" size="6" step="0.001">
         </div>
         <button type="submit" class="btn btn-success">Submit <span class="fa fa-arrow-right"></span></button>
         </form>
