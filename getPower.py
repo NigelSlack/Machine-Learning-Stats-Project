@@ -64,7 +64,7 @@ nnmodel2.add(kr.layers.Dense(1, activation='linear', kernel_initializer="glorot_
 nnmodel2.compile(kr.optimizers.Adam(lr=0.001), loss='mean_squared_error')
 nnmodel2.fit(df2['speed'], df2['power'], epochs=500, batch_size=10)
 
-testActual = df.to_numpy()
+#testActual = df.to_numpy()
 
 # Polynomial regression ; https://scikit-learn.org/stable/modules/linear_model.html
 from sklearn.preprocessing import PolynomialFeatures
@@ -79,14 +79,13 @@ def predict(s):
     return f(s,p)
     
 s = s.reshape(-1,1)
-model2 = Pipeline([('poly', PolynomialFeatures(degree=3)),('linear', LinearRegression(fit_intercept=False))])
+s2 = s2.reshape(-1,1)
+skmodel1 = Pipeline([('poly', PolynomialFeatures(degree=5)),('linear', LinearRegression(fit_intercept=False))])
+skmodel2 = Pipeline([('poly', PolynomialFeatures(degree=5)),('linear', LinearRegression(fit_intercept=False))])
 
-model2.fit(s,po)
-r = model2.score(s,po)
-
-#  arr = testActual[i][0].reshape(-1,1)
-#  print("Actual - ",testActual[i][1],"  Predicted - ",model2.predict(arr))
-
+skmodel1.fit(s,po)
+skmodel2.fit(s2,po2)
+#r = model2.score(s,po)
 
 # flask for web app.
 import flask as fl
@@ -107,19 +106,24 @@ def speed():
   if (dataFloat < minS) or (dataFloat > maxS):
     q1 = 0
     q2 = 0
+    q3 = 0
+    q4 = 0
   else: 
     dnp = np.float32(dataFloat)
     npa = np.array( [dnp,] )  
     q1 = nnmodel1.predict( npa)
     q2 = nnmodel2.predict( npa)
-  
+    arr = dnp.reshape(-1,1)
+    q3 = skmodel1.predict(arr)
+    q4 = skmodel2.predict(arr)
+
   result = []
-  result.append("Power excluding downtime - " + str(int(q1)) + " KwH")
-  result.append("  Power including downtime - " + str(int(q2)) + " KwH")
+  result.append("Power excluding downtime - Model 1 : " + str(int(q1)) + " KwH ; Model 2 : " + str(int(q3)) + " KwH ")
+  result.append("Power including downtime - Model 1 : " + str(int(q2)) + " KwH ; Model 2 : " + str(int(q4)) + " KwH ")
   return {"value": result}  
   
-@app.route('/api/uniform')
-def uniform():
+@app.route('/api/minmax')
+def minmax():
   result = []
   result.append("Min - " + str(minS) + " Km/H")
   result.append("   Max - " + str(maxS) + " Km/H")
