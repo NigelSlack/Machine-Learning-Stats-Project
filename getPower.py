@@ -1,3 +1,9 @@
+# GMIT HDip Data Analytics 2020; Machine Learning and Statistics project
+# Author : Nigel Slack ;  G00376340
+
+# Python Flask server to provide power output predictions for a wind turbine based on wind speed inputs taken from a web page.
+
+
 # Within neural networks a model may have insufficient capacity to learn the dataset, or it may have too much capacity 
 # and 'memorize' the dataset, possibly then getting stuck during optimization [1]. The capacity is determined by the number 
 # of nodes and layers.
@@ -43,7 +49,7 @@ df = pd.read_csv('powerproduction.txt', sep=",")
 
 # Make sure the values are sorted by the first column (speed), to make it easy to find the minimum and maxiumum wind speed values
 # below and above which the power output is zero.[1]
-[1] https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.sort_values.html
+# [1] https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.sort_values.html
 df.sort_values(by=df.columns[0])
 
 # Get the contents of the two columns, speed and power
@@ -144,8 +150,7 @@ nnmodel1.fit(df['speed'], df['power'], epochs=900, batch_size=10)
 nnmodel2 = kr.models.Sequential()
 nnmodel2.add(kr.layers.Dense(7, input_shape=(1,), activation='sigmoid', kernel_initializer="glorot_uniform", bias_initializer="glorot_uniform"))
 nnmodel2.add(kr.layers.Dense(7, input_shape=(1,), activation='sigmoid', kernel_initializer="glorot_uniform", bias_initializer="glorot_uniform"))
-nnmodel2.add(kr.la
-yers.Dense(1, activation='linear', kernel_initializer="glorot_uniform", bias_initializer="glorot_uniform"))
+nnmodel2.add(kr.layers.Dense(1, activation='linear', kernel_initializer="glorot_uniform", bias_initializer="glorot_uniform"))
 nnmodel2.compile(kr.optimizers.Adam(lr=0.001), loss='mean_squared_error')
 nnmodel2.fit(df2['speed'], df2['power'], epochs=900, batch_size=10)
 
@@ -165,7 +170,10 @@ def predict(s):
 s = s.reshape(-1,1)
 s2 = s2.reshape(-1,1)
 
-
+# Find a polynomial that describes well the transformation that converts input values to output values, then fit a 
+# regression line to it. Using 'Pipeline' we can do this in one command [1]. Do this for the two datasets - one including turbine 
+# downtime values, and one excluding them.
+# [1] Polynomial Regression ; https://ggbaker.ca/data-science/content/ml.html
 skmodel1 = Pipeline([('poly', PolynomialFeatures(degree=5)),('linear', LinearRegression(fit_intercept=False))])
 skmodel2 = Pipeline([('poly', PolynomialFeatures(degree=5)),('linear', LinearRegression(fit_intercept=False))])
 
@@ -173,38 +181,50 @@ skmodel1.fit(s,po)
 skmodel2.fit(s2,po2)
 
 # flask for web app.
-
+# From Machine Learning and Statistics lecture notes
 # Create a new web app.
 app = fl.Flask(__name__)
 
-# Add root route.
+# Add root route. 
 @app.route("/")
 def home():
   return app.send_static_file('getPower.html')
 
+# Respond to a request from the webpage to get the predicted power output associated with an input wind speed.
+# Four values are output, two each from the neural network model and the sklearn regression model, one including turbine downtime and
+# one excluding it.
 @app.route('/api/speed',methods=['GET', 'POST'])
 def speed():
+# Get the wind speed value input by the user
   data = request.form.get('name', '')
   dataFloat = float(data)
+# If the input value is less than the minimum wind speed or greater than the maximum wind speed, in which cases power output is always 
+# zero, return zero for all values.
   if (dataFloat < minS) or (dataFloat > maxS):
     q1 = 0
     q2 = 0
     q3 = 0
     q4 = 0
   else: 
+# Get the predicted power values from the two models  
+# Create a numpy array from the input value to pass to the neural network model (the expected input type)
     dnp = np.float32(dataFloat)
     npa = np.array( [dnp,] )  
     q1 = nnmodel1.predict( npa)
     q2 = nnmodel2.predict( npa)
+# Put the wind speed into a 2D array to pass to the sklearn model (again, the required input data type)
     arr = dnp.reshape(-1,1)
     q3 = skmodel1.predict(arr)
     q4 = skmodel2.predict(arr)
 
+# Pass the resulting predictions back to the webpage
   result = []
   result.append("Power excluding downtime - Model 1 : " + str(int(q1)) + " KwH ; Model 2 : " + str(int(q3)) + " KwH ")
   result.append("Power including downtime - Model 1 : " + str(int(q2)) + " KwH ; Model 2 : " + str(int(q4)) + " KwH ")
   return {"value": result}  
   
+# When the webpage loads it will request the minimum and maximum wind speeds from the server below and above which the power output
+# is always zero - to tell the user what these values are
 @app.route('/api/minmax')
 def minmax():
   result = []
