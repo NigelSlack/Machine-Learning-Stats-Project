@@ -16,8 +16,7 @@ There are also zero power values between the min and max mentioned, presumably d
 power network is already at full capacity.  
   
 The web page that acts as the user interface displays these min and max values to the user, and an input box for them to enter a wind speed value.  
-Four predicted power outputs are returned - two from each algorithm; one based on a dataset that excludes the zero power values associated with   
-turbine down time, and one that includes these values.  
+Four predicted power outputs are returned - two from each algorithm; one based on a dataset that excludes the zero power values associated with turbine down time, and one that includes these values.  
 
 Files for building a Docker container are provided, for implementing the utility in a Cloud environment.  
 
@@ -37,15 +36,15 @@ requirements.txt      - list of files required to build Docker container
 To run the utility locally : 
  
 Linux :  
-export FLASK_APP=getPower.py
+export FLASK_APP=getPower.py  
 python3 -m flask run
   
 Windows :  
-set FLASK_APP=getPower.py
+set FLASK_APP=getPower.py  
 python -m flask run  
 
 To build/run the Docker container :  
-docker build . -t getPower-image
+docker build . -t getPower-image  
 docker run --name getPower-container -d -p 5000:5000 getPower-image
 
 Then use the url : http://127.0.0.1:5000/ in the browser navigation bar.  
