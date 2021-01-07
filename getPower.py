@@ -148,11 +148,10 @@ nnmodel1.compile(kr.optimizers.Adam(lr=0.001), loss='mean_squared_error')
 nnmodel1.fit(df['speed'], df['power'], epochs=900, batch_size=10)
 
 nnmodel2 = kr.models.Sequential()
-nnmodel2.add(kr.layers.Dense(7, input_shape=(1,), activation='sigmoid', kernel_initializer="glorot_uniform", bias_initializer="glorot_uniform"))
-nnmodel2.add(kr.layers.Dense(7, input_shape=(1,), activation='sigmoid', kernel_initializer="glorot_uniform", bias_initializer="glorot_uniform"))
+nnmodel2.add(kr.layers.Dense(50, input_shape=(1,), activation='sigmoid', kernel_initializer="glorot_uniform", bias_initializer="glorot_uniform"))
 nnmodel2.add(kr.layers.Dense(1, activation='linear', kernel_initializer="glorot_uniform", bias_initializer="glorot_uniform"))
 nnmodel2.compile(kr.optimizers.Adam(lr=0.001), loss='mean_squared_error')
-nnmodel2.fit(df2['speed'], df2['power'], epochs=900, batch_size=10)
+nnmodel2.fit(df2['speed'], df2['power'], epochs=500, batch_size=10)
 
 # Use 'sklearn' to fit a regression line to the data. In the Jupyter notebook plots were made of a linear function, a 3rd order polynomial
 # and a fifth order polynomial, with the latter providing the best fit to the data [1].
