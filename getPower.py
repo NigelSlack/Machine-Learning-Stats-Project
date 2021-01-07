@@ -136,8 +136,7 @@ nnmodel1 = kr.models.Sequential()
 # [2] https://towardsdatascience.com/exploring-activation-functions-for-neural-networks-73498da59b02
 # [3] https://deeplizard.com/learn/video/8krd5qKVw-Q
 # [4] https://becominghuman.ai/priming-neural-networks-with-an-appropriate-initializer-7b163990ead
-nnmodel1.add(kr.layers.Dense(7, input_shape=(1,), activation='sigmoid', kernel_initializer="glorot_uniform", bias_initializer="glorot_uniform"))
-nnmodel1.add(kr.layers.Dense(7, input_shape=(1,), activation='sigmoid', kernel_initializer="glorot_uniform", bias_initializer="glorot_uniform"))
+nnmodel1.add(kr.layers.Dense(50, input_shape=(1,), activation='sigmoid', kernel_initializer="glorot_uniform", bias_initializer="glorot_uniform"))
 nnmodel1.add(kr.layers.Dense(1, activation='linear', kernel_initializer="glorot_uniform", bias_initializer="glorot_uniform"))
 # Here we make minor changes to the weights each time the values are passed through the network to try to minimise the mean squared error 
 # (the mean of the square of the difference between actual and predicted values produced by passing the input values through the network
@@ -145,7 +144,7 @@ nnmodel1.add(kr.layers.Dense(1, activation='linear', kernel_initializer="glorot_
 # [5] https://www.tutorialspoint.com/keras/keras_model_compilation.htm
 # [6] https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/
 nnmodel1.compile(kr.optimizers.Adam(lr=0.001), loss='mean_squared_error')
-nnmodel1.fit(df['speed'], df['power'], epochs=900, batch_size=10)
+nnmodel1.fit(df['speed'], df['power'], epochs=500, batch_size=10)
 
 nnmodel2 = kr.models.Sequential()
 nnmodel2.add(kr.layers.Dense(50, input_shape=(1,), activation='sigmoid', kernel_initializer="glorot_uniform", bias_initializer="glorot_uniform"))
